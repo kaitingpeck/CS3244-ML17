@@ -16,3 +16,10 @@ The installation option used in this project is ``virtual environment``
 ## Project Structure
 1. Source code is found in ```/src```
 2. training data is found in ```/data```
+
+
+## Acknowledgement
+
+The datasets are obtained from 
+https://github.com/garythung/trashnet
+
