@@ -23,3 +23,12 @@ The installation option used in this project is ``virtual environment``
 The datasets are obtained from 
 https://github.com/garythung/trashnet
 
+
+## Progress
+
+###20th March
+1. First attempt: convert premade_estimator.py to accept our own jpg. However the data loaded into the scripts are already vectors. Hence I need to find a way to convert jpg into vectors
+
+2. cnn_mnist.py is the example of mnist. However their image format is unknow. This is what happens when you use untyped language. No one knows what's going on and the original developer has already left the company. 
+
+3. I'm looking for the guide to convert jpg images to vectors that tf can accept. also need to know how to label them and load a bunch of them sequentially. 
