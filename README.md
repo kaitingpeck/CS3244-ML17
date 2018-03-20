@@ -34,3 +34,5 @@ https://github.com/garythung/trashnet
 3. I'm looking for the guide to convert jpg images to vectors that tf can accept. also need to know how to label them and load a bunch of them sequentially. 
 
 4. coming very close to getting some image processed
+5. I manage to convert something at ```/data/out```. But I don't know what I have converted there. It's from the guide at
+https://github.com/tensorflow/models/blob/master/research/inception/README.md#how-to-construct-a-new-dataset-for-retraining
