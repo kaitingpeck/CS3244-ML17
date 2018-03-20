@@ -32,3 +32,5 @@ https://github.com/garythung/trashnet
 2. ```cnn_mnist.py``` is the example of mnist. However their image format is unknow. This is what happens when you use untyped language. No one knows what's going on and the original developer has already left the company. 
 
 3. I'm looking for the guide to convert jpg images to vectors that tf can accept. also need to know how to label them and load a bunch of them sequentially. 
+
+4. coming very close to getting some image processed
