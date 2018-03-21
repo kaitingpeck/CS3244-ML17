@@ -36,3 +36,6 @@ https://github.com/garythung/trashnet
 4. coming very close to getting some image processed
 5. I manage to convert something at ```/data/out```. But I don't know what I have converted there. It's from the guide at
 https://github.com/tensorflow/models/blob/master/research/inception/README.md#how-to-construct-a-new-dataset-for-retraining
+
+## 21st March
+1. Found this https://github.com/gskielian/JPG-PNG-to-MNIST-NN-Format  that claims to transform custom images into mnist-like data file for input
