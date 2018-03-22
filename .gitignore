@@ -1,3 +1,7 @@
+#cutom
+test-images/
+training-images/
+
 # System file
 .DS_Store
 
