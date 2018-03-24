@@ -2,7 +2,7 @@
 
 #simple script for resizing images in all class directories
 #also reformats everything from whatever to png
-size="28x28"
+size="112x112"
 
 if [ `ls test-images/*/*.png 2> /dev/null | wc -l ` -gt 0 ]; then
   echo hi
