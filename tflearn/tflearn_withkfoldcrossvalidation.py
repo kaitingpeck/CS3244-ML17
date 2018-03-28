@@ -59,7 +59,7 @@ def run_k_fold(label_filepath, root_dir, img_src_dir):
         nVal = len(val_labels)
         
         copy_images_into_dir(train_imgs, val_imgs, train_labels, val_labels, train_dir, val_dir, img_src_dir)
-        train_model(batch_size, train_dir, val_dir, nTrain, nVal)
+        train_model(batch_size, train_dir, val_dir, nTrain, nVal, i)
 
         i += 1
     return
@@ -167,7 +167,7 @@ def compile_model(base_model, model):
               metrics=['accuracy'])
     return model
 
-def train_model(batch_size, train_dir, val_dir, nTrain, nVal):
+def train_model(batch_size, train_dir, val_dir, nTrain, nVal, i):
 
     # Set up generators to flow batches of data
     train_generator = make_train_data_generator(train_dir, batch_size)
@@ -196,7 +196,7 @@ def train_model(batch_size, train_dir, val_dir, nTrain, nVal):
     # as well as validation loss values and validation metrics values (if applicable).
 
     # Plot results based on this run
-    plot_results(history)
+    plot_results(history, i)
  
     return
 
