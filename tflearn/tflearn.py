@@ -24,6 +24,9 @@ INPUT_DEPTH = 3 #RGB
 
 # Set parameters
 root_dir = 'C:/Users/Kai/Desktop/CS3244/Project/data/test-runs/' + str(run_idx)
+if not os.path.exists(root_dir):
+    os.makedirs(root_dir)
+    
 src_dir_all_data = 'C:/Users/Kai/Desktop/CS3244/Project/data/dataset-resized/'
 item_types = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 num_classes = len(item_types)
