@@ -1,6 +1,7 @@
 #cutom
 test-images/
 training-images/
+test-runs/
 
 # System file
 .DS_Store

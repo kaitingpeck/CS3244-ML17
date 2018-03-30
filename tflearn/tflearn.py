@@ -18,22 +18,28 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 run_idx = 1
 model_type = "VGG16"
 optimizer_name = "RMSProp"
-
-kaiting_system_dir='C:/Users/Kai/Desktop/CS3244/Project'
-charles_system_dir='/Users/charleschang/tensorflow'
+INPUT_WIDTH = 224
+INPUT_HEIGHT = 224
+INPUT_DEPTH = 3 #RGB
 
 # Set parameters
-root_dir = charles_system_dir+'/data/test-runs/' + str(run_idx)
+
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+root_dir =  project_dir + '/data/test-runs/' + str(run_idx)
+if not os.path.exists(root_dir):
+    os.makedirs(root_dir)
+    
+src_dir_all_data = project_dir + '/data/dataset-resized/'
 item_types = ['cardboard', 'glass', 'metal', 'paper', 'plastic', 'trash']
 num_classes = len(item_types)
 batch_size = 20
 num_epochs = 20
 
-# Data pre-processing - split into training and validation set
-def split_data(root_dir):
+# Data pre-processing - split into training and validation set (using k as the ratio)
+def split_data(root_dir, k):
 
     nTrain, nVal = 0, 0
-
+    
     # Create train and validation folders
     train_dir = root_dir + '/train' 
     if not os.path.exists(train_dir):
@@ -45,11 +51,10 @@ def split_data(root_dir):
 
     # For each item, copy the training and test data into a new class file
     for item in item_types:
-        src_dir = charles_system_dir+'/data/dataset-resized/' + item
+        src_dir = src_dir_all_data + item
         files = next(os.walk(src_dir))[2]
         num_files = len(files)
 
-        k = 0.8
         num_train = round(k*num_files)
         num_val = num_files - num_train
         nTrain += num_train
@@ -78,38 +83,32 @@ def split_data(root_dir):
 
 # Load pre-trained model
 def load_model():
-    conv_base = VGG16(weights='imagenet',
-            include_top=False,
-            input_shape=(224, 224, 3))
-    return conv_base
+     conv_base = VGG16(weights='imagenet',
+                  include_top=False,
+                  input_shape=(INPUT_WIDTH, INPUT_HEIGHT, INPUT_DEPTH))
+     return conv_base
 
 def extract_features_train(conv_base, train_dir, nTrain, batch_size, num_classes):
     datagen = ImageDataGenerator(rescale=1./255)
-
-    train_features = np.zeros(shape=(nTrain, 7, 7, 512))
-    train_labels = np.zeros(shape=(nTrain, num_classes))
-
+     
     train_generator = datagen.flow_from_directory(
-            train_dir,
-            target_size=(224, 224),
-            batch_size=batch_size,
-            class_mode='categorical',
-            shuffle=True)
+        train_dir,
+        target_size=(INPUT_WIDTH, INPUT_HEIGHT),
+        batch_size=batch_size,
+        class_mode='categorical',
+        shuffle=True)
 
     return train_generator
 
 def extract_features_val(conv_base, val_dir, nVal, batch_size, num_classes):
     datagen = ImageDataGenerator(rescale=1./255)
-
-    val_features = np.zeros(shape=(nVal, 7, 7, 512))
-    val_labels = np.zeros(shape=(nVal,num_classes))
-
+     
     val_generator = datagen.flow_from_directory(
-            val_dir,
-            target_size=(224, 224),
-            batch_size=batch_size,
-            class_mode='categorical',
-            shuffle=False)
+        val_dir,
+        target_size=(INPUT_WIDTH, INPUT_HEIGHT),
+        batch_size=batch_size,
+        class_mode='categorical',
+        shuffle=False)
 
     return val_generator
 
@@ -126,31 +125,31 @@ def add_new_last_layer(base_model, num_classes):
 def train_model(base_model, model, train_generator, val_generator, batch_size):
     for layer in base_model.layers:
         layer.trainable = False
-
-    model.compile(optimizer=optimizers.RMSprop(lr=2e-2, decay=0.5),
-            loss='categorical_crossentropy',
-            metrics=['accuracy'])
+    
+    model.compile(optimizer=optimizers.RMSprop(lr=2e-3, decay=0.5),
+              loss='categorical_crossentropy',
+              metrics=['accuracy'])
 
     filepath = "checkpoint-"+ model_type+"-"+optimizer_name+"-epoch{epoch:02d}-val_acc{val_acc:.3f}.hdf5"
     early_stop = EarlyStopping(monitor='val_acc', min_delta=0.01, patience=5, mode='max')
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=2, save_best_only=False, save_weights_only=False, mode='auto', period=1)
-
+    
     callbacks_list = [checkpoint, early_stop]
-
+ 
     history = model.fit_generator(train_generator,
-            epochs=num_epochs,
-            validation_data=val_generator,
-            steps_per_epoch = nTrain // batch_size,
-            validation_steps = nVal // batch_size,
-            callbacks = callbacks_list)
-
+                    epochs=num_epochs,
+                    validation_data=val_generator,
+                    steps_per_epoch = nTrain // batch_size,
+                    validation_steps = nVal // batch_size,
+                    callbacks = callbacks_list)
+    
     # History: a record of training loss values and metrics values at successive epochs,
     # as well as validation loss values and validation metrics values (if applicable).
     # print(history)
     return model, history
 
 def plot_training(history):
-    acc = history.history['acc']
+  acc = history.history['acc']
   val_acc = history.history['val_acc']
   loss = history.history['loss']
   val_loss = history.history['val_loss']
@@ -168,7 +167,7 @@ def plot_training(history):
 
   return
 
-train_dir, val_dir, nTrain, nVal = split_data(root_dir)
+train_dir, val_dir, nTrain, nVal = split_data(root_dir, 0.8)
 conv_base = load_model()
 train_generator = extract_features_train(conv_base, train_dir, nTrain, batch_size, num_classes)
 val_generator = extract_features_val(conv_base, val_dir, nVal, batch_size, num_classes)
