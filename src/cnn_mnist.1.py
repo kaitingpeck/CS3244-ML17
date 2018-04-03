@@ -15,31 +15,31 @@ def cnn_model_fn(features, labels, mode):
   # Input Layer
   # Reshape X to 4-D tensor: [batch_size, width, height, channels]
   # MNIST images are 28x28 pixels, and have one color channel
-  input_layer = tf.reshape(features["x"], [-1, 56, 56, 1])
+  input_layer = tf.reshape(features["x"], [-1, 56, 56, 3])
 
   # Convolutional Layer #1
   # Computes 32 features using a 5x5 filter with ReLU activation.
   # Padding is added to preserve width and height.
-  # Input Tensor Shape: [batch_size, 28, 28, 1]
-  # Output Tensor Shape: [batch_size, 28, 28, 32]
+  # Input Tensor Shape: [batch_size, 56, 56, 1]
+  # Output Tensor Shape: [batch_size, 56, 56, 64]
   conv1 = tf.layers.conv2d(
       inputs=input_layer,
       filters=64,
-      kernel_size=[5, 5],
+      kernel_size=[5, 5, 3],
       padding="same",
       activation=tf.nn.relu)
 
   # Pooling Layer #1
   # First max pooling layer with a 2x2 filter and stride of 2
-  # Input Tensor Shape: [batch_size, 28, 28, 32]
-  # Output Tensor Shape: [batch_size, 14, 14, 32]
+  # Input Tensor Shape: [batch_size, 56, 56, 64]
+  # Output Tensor Shape: [batch_size, 28, 28, 64]
   pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
   # Convolutional Layer #2
   # Computes 64 features using a 5x5 filter.
   # Padding is added to preserve width and height.
-  # Input Tensor Shape: [batch_size, 14, 14, 32]
-  # Output Tensor Shape: [batch_size, 14, 14, 64]
+  # Input Tensor Shape: [batch_size, 28, 28, 64]
+  # Output Tensor Shape: [batch_size, 28, 28, 128]
   conv2 = tf.layers.conv2d(
       inputs=pool1,
       filters=128,
@@ -49,20 +49,20 @@ def cnn_model_fn(features, labels, mode):
 
   # Pooling Layer #2
   # Second max pooling layer with a 2x2 filter and stride of 2
-  # Input Tensor Shape: [batch_size, 14, 14, 64]
-  # Output Tensor Shape: [batch_size, 7, 7, 64]
+  # Input Tensor Shape: [batch_size, 28, 28, 128]
+  # Output Tensor Shape: [batch_size, 14, 14, 128]
   pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
   # Flatten tensor into a batch of vectors
-  # Input Tensor Shape: [batch_size, 7, 7, 64]
-  # Output Tensor Shape: [batch_size, 7 * 7 * 64]
-  pool2_flat = tf.reshape(pool2, [-1, 14 * 14 * 64])
+  # Input Tensor Shape: [batch_size, 14, 14, 128]
+  # Output Tensor Shape: [batch_size, 14 * 14 * 128]
+  pool2_flat = tf.reshape(pool2, [-1, 14 * 14 * 128])
 
   # Dense Layer
   # Densely connected layer with 1024 neurons
   # Input Tensor Shape: [batch_size, 7 * 7 * 64]
   # Output Tensor Shape: [batch_size, 1024]
-  dense = tf.layers.dense(inputs=pool2_flat, units=1024, activation=tf.nn.relu)
+  dense = tf.layers.dense(inputs=pool2_flat, units=2048, activation=tf.nn.relu)
 
   # Add dropout operation; 0.6 probability that element will be kept
   dropout = tf.layers.dropout(
@@ -71,7 +71,7 @@ def cnn_model_fn(features, labels, mode):
   # Logits layer
   # Input Tensor Shape: [batch_size, 1024]
   # Output Tensor Shape: [batch_size, 10]
-  logits = tf.layers.dense(inputs=dropout, units=10)
+  logits = tf.layers.dense(inputs=dropout, units=6)
 
   predictions = {
       # Generate predictions (for PREDICT and EVAL mode)
@@ -129,7 +129,7 @@ def main(unused_argv):
       shuffle=True)
   mnist_classifier.train(
       input_fn=train_input_fn,
-      steps=20000,
+      steps=10000,
       hooks=[logging_hook])
 
   # Evaluate the model and print results

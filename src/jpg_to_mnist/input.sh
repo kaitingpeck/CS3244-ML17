@@ -4,7 +4,7 @@ rm -r $(dirname $0)/test-images/*
 rm -r $(dirname $0)/training-images/*
 
 
-list=( "glass" "metal" "paper" "plastic")
+list=("cardboard" "glass" "metal" "paper" "plastic" "trash")
 count=0
 for name in "${list[@]}"
 do
