@@ -1,7 +1,7 @@
 import os, os.path
 import glob
 import shutil
-from keras.applications import VGG16, VGG19
+from keras.applications import VGG16, VGG19, InceptionV3
 from keras import models
 from keras import layers
 from keras import optimizers
@@ -17,10 +17,11 @@ from keras.callbacks import ModelCheckpoint, EarlyStopping
 from sklearn.model_selection import KFold
 import pandas
 from pandas import DataFrame
+import traceback
 
 ## Set parameters
 # Run index (for recording purposes)
-run_idx = 5
+run_idx = 12
 
 # File paths
 root_dir = 'C:/Users/Kai/Desktop/CS3244/Project/data/test-runs/' + str(run_idx)
@@ -31,11 +32,11 @@ label_filepath = 'C:/Users/Kai/Desktop/CS3244/Project/data/labels/zero-indexed-f
 CLASSES = ['glass', 'paper', 'cardboard', 'plastic', 'metal', 'trash']
 NUM_CLASSES = len(CLASSES)
 batch_size = 20
-num_epochs = 20
-MODEL_TYPE = "VGG19"
-OPTIMIZER_NAME = "RMSProp"
-INPUT_WIDTH = 224
-INPUT_HEIGHT = 224
+num_epochs = 50
+MODEL_TYPE = "InceptionV3"
+OPTIMIZER_NAME = "RMSPROP"
+INPUT_WIDTH = 299
+INPUT_HEIGHT = 299
 INPUT_DEPTH = 3 #RGB
 
 def run_k_fold(label_filepath, root_dir, img_src_dir):
@@ -59,7 +60,11 @@ def run_k_fold(label_filepath, root_dir, img_src_dir):
         nVal = len(val_labels)
         
         copy_images_into_dir(train_imgs, val_imgs, train_labels, val_labels, train_dir, val_dir, img_src_dir)
-        train_model(batch_size, train_dir, val_dir, nTrain, nVal, i)
+        try:
+            train_model(batch_size, train_dir, val_dir, nTrain, nVal, i)
+        except Exception as e:
+            print(traceback.format_exc())
+            pass
 
         i += 1
     return
@@ -97,7 +102,7 @@ def copy_images_into_dir(train_imgs, val_imgs, train_labels, val_labels, train_d
 
 # Load pre-trained model
 def load_model():
-     conv_base = VGG19(weights='imagenet',
+     conv_base = InceptionV3(weights='imagenet',
                   include_top=False,
                   input_shape=(INPUT_WIDTH, INPUT_HEIGHT, INPUT_DEPTH))
      return conv_base
@@ -144,17 +149,18 @@ def plot_results(history, n):
   val_loss = history.history['val_loss']
   epochs = range(len(acc))
 
+  plt.figure()
   plt.plot(epochs, acc, 'r.')
   plt.plot(epochs, val_acc, 'r')
   plt.title('Training and validation accuracy')
-  savefig('accuracy' + '-' + n + '-fold.jpg', bbox_inches='tight')
+  plt.savefig('accuracy' + '-' + str(n) + '-fold.jpg', bbox_inches='tight')
 
   plt.figure()
   plt.plot(epochs, loss, 'r.')
   plt.plot(epochs, val_loss, 'r-')
   fig = plt.title('Training and validation loss')
-  savefig('loss' + '-' + n + '-fold.jpg', bbox_inches='tight')
-  plt.show()
+  plt.savefig('loss' + '-' + str(n) + '-fold.jpg', bbox_inches='tight')
+  # plt.show()
 
   return
 
@@ -162,12 +168,12 @@ def compile_model(base_model, model):
     for layer in base_model.layers:
         layer.trainable = False
     
-    model.compile(optimizer=optimizers.rmsprop(lr=1e-4, decay = 0.3),
+    model.compile(optimizer=optimizers.rmsprop(lr=1e-4),
               loss='categorical_crossentropy',
               metrics=['accuracy'])
     return model
 
-def train_model(batch_size, train_dir, val_dir, nTrain, nVal, i):
+def train_model(batch_size, train_dir, val_dir, nTrain, nVal, n):
 
     # Set up generators to flow batches of data
     train_generator = make_train_data_generator(train_dir, batch_size)
@@ -180,7 +186,7 @@ def train_model(batch_size, train_dir, val_dir, nTrain, nVal, i):
 
     # Set parameters for running model
     filepath = "checkpoint-"+ MODEL_TYPE +"-" + OPTIMIZER_NAME + "-epoch{epoch:02d}-val_acc{val_acc:.3f}.hdf5"
-    early_stop = EarlyStopping(monitor='val_acc', min_delta=0.01, patience=5, mode='max')
+    early_stop = EarlyStopping(monitor='val_acc', min_delta=0.001, patience=5, mode='max')
     checkpoint = ModelCheckpoint(filepath, monitor='val_acc', verbose=2, save_best_only=False, save_weights_only=False, mode='auto', period=1)
     callbacks_list = [checkpoint, early_stop]
 
@@ -196,7 +202,7 @@ def train_model(batch_size, train_dir, val_dir, nTrain, nVal, i):
     # as well as validation loss values and validation metrics values (if applicable).
 
     # Plot results based on this run
-    plot_results(history, i)
+    plot_results(history,n)
  
     return
 
