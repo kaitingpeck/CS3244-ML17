@@ -4,6 +4,7 @@ import numpy as np
 from sklearn import svm
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
+from hpsklearn import HyperoptEstimator, svc
 
 # File paths
 # root_dir = 'C:/Users/Kai/Desktop/CS3244/Project/data/test-runs-svm/' + str(run_idx)
@@ -59,18 +60,23 @@ def run_svm(images, labels, num_folds=5):
 
     '''
     clf = svm.SVC()
-    scores = cross_val_score(clf, images, labels, cv=num_folds)
+    # scores = cross_val_score(clf, images, labels, cv=num_folds)
     return scores
 
-'''def k_fold(images, labels):
-    kf = KFold(n_splits=2)
+def k_fold_opt(images, labels):
+    kf = KFold(n_splits=5)
     for train, test in kf.split(images):
         images_train, images_test = images[train], images[test]
         labels_train, labels_test = labels[train], labels[test]
-        svm = run_svm(images_train, labels_train) # trained SVM model
-        
-    return '''
+        # svm = run_svm(images_train, labels_train) # trained SVM model
+        estim = HyperoptEstimator(classifier=svc('clf'))
+        estim.fit(images_train, labels_train)
+
+        print(estim.score(images_test, labels_test))
+        print( estim.best_model() )
+    return
         
 images, labels = read_data(label_filepath, img_src_dir)
-scores = run_svm(images, labels, 3)
-print(scores)
+# scores = run_svm(images, labels, 3)
+# print(scores)
+k_fold_opt(images, labels)
