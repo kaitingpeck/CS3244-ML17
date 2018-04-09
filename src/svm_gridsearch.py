@@ -1,6 +1,7 @@
 import imageio
 import pandas
 import numpy as np
+import os
 from sklearn import svm
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
