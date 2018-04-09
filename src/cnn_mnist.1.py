@@ -15,17 +15,17 @@ def cnn_model_fn(features, labels, mode):
   # Input Layer
   # Reshape X to 4-D tensor: [batch_size, width, height, channels]
   # MNIST images are 28x28 pixels, and have one color channel
-  input_layer = tf.reshape(features["x"], [-1, 56, 56, 3])
+  input_layer = tf.reshape(features["x"], [-1, 56, 56, 1])
 
   # Convolutional Layer #1
-  # Computes 32 features using a 5x5 filter with ReLU activation.
+  # Computes 64 features using a 5x5 filter with ReLU activation.
   # Padding is added to preserve width and height.
-  # Input Tensor Shape: [batch_size, 56, 56, 1]
+  # Input Tensor Shape: [batch_size, 56, 56, 3]
   # Output Tensor Shape: [batch_size, 56, 56, 64]
   conv1 = tf.layers.conv2d(
       inputs=input_layer,
       filters=64,
-      kernel_size=[5, 5, 3],
+      kernel_size=[5, 5],
       padding="same",
       activation=tf.nn.relu)
 
