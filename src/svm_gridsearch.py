@@ -70,24 +70,25 @@ def run_svm(images, labels, num_folds=5):
     '''
     # set parameters to "optimize"
     parameters = {'C': [0.5, 1.0, 10]}
-    svc = svm.LinearSVC() # Runs a linear SVM
+    svc = svm.LinearSVC(verbose=2, max_iter=10000) # Runs a linear SVM
     
-    clf = GridSearchCV(svc, parameters, cv=num_folds)
+    clf = GridSearchCV(svc, parameters, cv=num_folds, return_train_score=True)
     cv_results = clf.fit(images, labels).cv_results_
 
     # Collate results
-    mean_test_score = cv_results['mean_test_score'].tolist()
-    params = cv_results['params']
+    # mean_test_score = cv_results['mean_test_score'].tolist()
+    # params = cv_results['params']
 
     # Collect index of best test score
-    best_test_score_idx = mean_test_score.index(max(mean_test_score))
+    # best_test_score_idx = mean_test_score.index(max(mean_test_score))
     
-    return mean_test_score[best_test_score_idx], params[best_test_score_idx]
+    return cv_results
 
 # "main" function
 images, labels = read_data(label_filepath, img_src_dir)
-best_score, params = run_svm(images, labels, 5)
+cv_results = run_svm(images, labels, 5)
+print(cv_results)
 
 # print results
-print('Best score: ' + str(best_score))
-print('Achieved with C: ' + str(params))
+# print('Best score: ' + str(best_score))
+# print('Achieved with C: ' + str(params))
