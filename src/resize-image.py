@@ -15,7 +15,9 @@ NEW_HEIGHT = 96
 project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 img_src_dir = project_dir + '/data/dataset-resized/full-data' # this file needs to contain all the images from all classes
 img_dest_dir = project_dir + '/data/dataset-resized-' + str(NEW_WIDTH) + '-' + \
-              str(NEW_HEIGHT) + '/'
+              str(NEW_HEIGHT) + '/' 
+label_filepath = project_dir + '/data/labels/zero-indexed-files.txt' # this file contains the image names and corresponding labels
+
 
 def make_dir(dir_name):
     if not os.path.exists(dir_name):
