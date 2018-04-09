@@ -26,10 +26,7 @@ def make_dir(dir_name):
 
 def read_data(label_filepath, img_src_dir, img_dest_dir):
     '''
-    transforms data into the following:
-    images = each row is a vector of the pixels of the RGB image
-    labels = a column vector representing the respective labels of the image vector
-    
+    resizes images into a new folder
     '''
     df = pandas.read_csv(label_filepath, sep = " ", header = None, names = ['images','label'])
     image_names = df['images'].values # list of the image names
