@@ -24,7 +24,7 @@ def make_dir(dir_name):
         os.makedirs(dir_name)
     return dir_name
 
-def read_data(label_filepath, img_src_dir, img_dest_dir):
+def resize_images(label_filepath, img_src_dir, img_dest_dir):
     '''
     resizes images into a new folder
     '''
@@ -41,5 +41,5 @@ def read_data(label_filepath, img_src_dir, img_dest_dir):
     return
 
 # "main" program
-read_data(label_filepath, img_src_dir, img_dest_dir)
+resize_images(label_filepath, img_src_dir, img_dest_dir)
     
