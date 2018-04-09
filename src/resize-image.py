@@ -3,17 +3,19 @@ import pandas
 import os
 import glob
 
+# original pixel dimensions of images
 ORIGINAL_WIDTH = 512
 ORIGINAL_HEIGHT = 384
 
 # calculated from https://andrew.hedges.name/experiments/aspect_ratio/
-NEW_WIDTH = 64
-NEW_HEIGHT = 48
+NEW_WIDTH = 128
+NEW_HEIGHT = 96
 
-img_src_dir = 'C:/Users/Kai/Desktop/CS3244/Project/data/dataset-resized/full-data'
-img_dest_dir = 'C:/Users/Kai/Desktop/CS3244/Project/data/dataset-resized-64-48/'
-label_filepath = 'C:/Users/Kai/Desktop/CS3244/Project/data/labels/zero-indexed-files.txt'
-
+# Set project directory
+project_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+img_src_dir = project_dir + '/data/dataset-resized/full-data' # this file needs to contain all the images from all classes
+img_dest_dir = project_dir + '/data/dataset-resized-' + str(INPUT_WIDTH) + '-' + \
+              str(INPUT_HEIGHT) + '/'
 
 def make_dir(dir_name):
     if not os.path.exists(dir_name):
@@ -30,17 +32,15 @@ def read_data(label_filepath, img_src_dir, img_dest_dir):
     df = pandas.read_csv(label_filepath, sep = " ", header = None, names = ['images','label'])
     image_names = df['images'].values # list of the image names
     img_dest_dir = make_dir(img_dest_dir)
-
-   # print(image_names[:50])
     
     for image_name in image_names:
         image = Image.open(img_src_dir + '/' + image_name)
         resized_img = image.resize((NEW_WIDTH, NEW_HEIGHT))
-        # print(img_dest_dir)
         resized_img.save(img_dest_dir + '/' + image_name, "JPEG")
 
     print('Finished reading data. ' + str(len(image_names)) + ' images resized.')
     return
 
+# "main" program
 read_data(label_filepath, img_src_dir, img_dest_dir)
     
