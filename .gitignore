@@ -2,6 +2,10 @@
 test-images/
 training-images/
 test-runs/
+bin
+data/dataset-resized
+data/dataset-resized-128-96/
+dataset/
 
 # System file
 .DS_Store

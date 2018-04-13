@@ -1,0 +1,1 @@
+python scripts-tensorflowForPoets/retrain.py --bottleneck_dir=bottlenecks --model_dir=models --how_many_training_steps=5000 --summaries_dir=training_summaries/inception_v3 --output_graph=output/retrained_graph.pb --output_labels=output/retrained_labels.txt --architecture=inception_v3  --image_dir=data/dataset-resized
